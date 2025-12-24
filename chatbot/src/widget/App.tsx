@@ -38,6 +38,45 @@ export default function App({ botId }: Props) {
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const hasSubmittedDocumentsRef = useRef(false);
 
+  // Update host element size based on open state
+  useEffect(() => {
+    const host = document.querySelector(
+      '[id^="chat-widget-host-"]'
+    ) as HTMLElement | null;
+    if (!host) return;
+
+    const isHostMobile = (host as any).__chatWidgetIsMobile;
+    const dimensions = (host as any).__chatWidgetDimensions;
+
+    if (isHostMobile || isMobile) {
+      // Mobile: full screen when open, minimal when closed
+      if (open) {
+        host.style.inset = "0";
+        host.style.width = "100dvw";
+        host.style.height = "100dvh";
+        host.style.right = "";
+        host.style.bottom = "";
+        host.style.borderRadius = "0";
+      } else {
+        host.style.inset = "";
+        host.style.width = "auto";
+        host.style.height = "auto";
+        host.style.right = "1.25rem";
+        host.style.bottom = "1.25rem";
+        host.style.borderRadius = "";
+      }
+    } else if (dimensions) {
+      // Desktop: fixed size when open, minimal when closed
+      if (open) {
+        host.style.width = `${dimensions.width}px`;
+        host.style.height = `${dimensions.height}px`;
+      } else {
+        host.style.width = "auto";
+        host.style.height = "auto";
+      }
+    }
+  }, [open, isMobile]);
+
   // Detect mobile resize
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 640);
@@ -218,6 +257,7 @@ DOB: 15/5/1992`;
           className="fixed bottom-6 right-6 z-[9999999] w-14 md:w-16 h-14 md:h-16 rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 transition text-white"
           style={{
             background: "linear-gradient(135deg, var(--v-primary), #0f766e)",
+            pointerEvents: "auto",
           }}
         >
           <div className="relative flex flex-col items-center">

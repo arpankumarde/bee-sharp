@@ -45,15 +45,21 @@ export function mountWidget(config: Config = {}) {
   const isMobile = window.innerWidth <= 640;
 
   if (isMobile) {
-    hostEl.style.inset = "0";
-    hostEl.style.width = "100dvw";
-    hostEl.style.height = "100dvh";
-    hostEl.style.borderRadius = "0";
-  } else {
-    hostEl.style.width = `${width}px`; // 360px
-    hostEl.style.height = `${height}px`; // 520px
+    // Start with minimal size (just button) - will expand to full screen when opened
+    hostEl.style.width = "auto";
+    hostEl.style.height = "auto";
     hostEl.style.right = "1.25rem";
     hostEl.style.bottom = "1.25rem";
+    // Store mobile flag for when chat opens
+    (hostEl as any).__chatWidgetIsMobile = true;
+  } else {
+    // Start with minimal size (just button) - will expand when opened
+    hostEl.style.width = "auto";
+    hostEl.style.height = "auto";
+    hostEl.style.right = "1.25rem";
+    hostEl.style.bottom = "1.25rem";
+    // Store full dimensions for when chat opens
+    (hostEl as any).__chatWidgetDimensions = { width, height };
   }
 
   document.body.appendChild(hostEl);
